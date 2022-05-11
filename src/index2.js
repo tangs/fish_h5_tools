@@ -121,6 +121,7 @@ const timelinesUuid = new Map();
         const tmpObj = JSON.parse(content);
         const fishAssetsMgr = getCompoentByType(tmpObj, "c0672QOzepOmZmIJyjc9/QY");
         const fishScript = getCompoentByType(tmpObj, "fb10c/rSnNAV7RObXxEz8ZA");
+        const rootScript = getCompoentByType(tmpObj, "a783eVMAfNOpZpfy0khUhCr");
         const sceneScript = getCompoentByType(tmpObj, "cc.Scene");
 
         const fishPrefabs = [];
@@ -132,6 +133,7 @@ const timelinesUuid = new Map();
 
         fishScript.timelinesText["__uuid__"] = timelineUuid;
         sceneScript["_name"] = `fish-${gameId}`;
+        rootScript.isStandalone = gameId === "standalone";
 
         const metaPath = `${destFilePath}.meta`;
         if (fs.existsSync(metaPath)) {
