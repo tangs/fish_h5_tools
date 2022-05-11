@@ -121,7 +121,8 @@ const make = (plistPaths, destPrefabFolder, isBomb) => {
         fishScript.spriteFrames = spriteFrames;
         fishScript.isBomb = isBomb;
         fishScript.lockPriority = lockPriority;
-        fishSprite.isJackpot = isJackpot;
+        fishScript.isJackpot = isJackpot;
+        fishSprite._spriteFrame = spriteFrames[0];
         if (uuid) {
             fishScript.deathTalkClip = {
                 "__uuid__": uuid,
