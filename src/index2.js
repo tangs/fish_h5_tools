@@ -33,6 +33,9 @@ const timelinesUuid = new Map();
                 const content = fs.readFileSync(path1);
                 const {uuid} = JSON.parse(content);
                 timelinesUuid.set(gameId, uuid);
+                if (gameId === "1") {
+                    timelinesUuid.set("standalone", uuid);
+                }
                 // console.log(`bg index:${bgIndex}, uuid:${uuid}`);
             }
         }
@@ -64,6 +67,8 @@ const timelinesUuid = new Map();
             // console.log(fishTypeSet);
         }
     }
+    gameFishTypes.set("standalone", allFishTypes);
+    gameBgs.set("standalone", allBgs);
 }
 {
     const fishPrefabPaths = [
@@ -112,9 +117,11 @@ const timelinesUuid = new Map();
     // console.log(gameIds);
     const content = fs.readFileSync(fishSceneTmpPath);
     for (const gameId of gameBgs.keys()) {
+        const destFilePath = `${sceneDestPath}/fish-${gameId}.scene`;
         const tmpObj = JSON.parse(content);
         const fishAssetsMgr = getCompoentByType(tmpObj, "c0672QOzepOmZmIJyjc9/QY");
         const fishScript = getCompoentByType(tmpObj, "fb10c/rSnNAV7RObXxEz8ZA");
+        const sceneScript = getCompoentByType(tmpObj, "cc.Scene");
 
         const fishPrefabs = [];
         const fishTypes = Array.from(gameFishTypes.get(gameId)).sort((a, b) => a - b);
@@ -124,6 +131,14 @@ const timelinesUuid = new Map();
         console.log(fishTypes);
 
         fishScript.timelinesText["__uuid__"] = timelineUuid;
+        sceneScript["_name"] = `fish-${gameId}`;
+
+        const metaPath = `${destFilePath}.meta`;
+        if (fs.existsSync(metaPath)) {
+            const content1 = fs.readFileSync(metaPath);
+            const tmpObj1 = JSON.parse(content1);
+            sceneScript["_id"] = tmpObj1.uuid;
+        }
 
         for (const fishType of fishTypes) {
             assert(fishPrefabUuid.has(fishType), `can't find fish type:${fishType} uuid.`);
@@ -134,7 +149,6 @@ const timelinesUuid = new Map();
             });
         }
         fishAssetsMgr.otherFish = fishPrefabs;
-        const destFilePath = `${sceneDestPath}/fish-${gameId}.scene`;
         fs.writeFileSync(destFilePath, JSON.stringify(tmpObj, null, 2));
     }
 }
