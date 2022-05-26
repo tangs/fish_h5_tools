@@ -3,7 +3,9 @@ const fs = require('fs');
 
 const getCompoentByType = (comps, type, nodeId) => {
     for (const comp of comps) {
-        if (comp["__type__"] === type && comp["node"]["__id__"] == nodeId) {
+        if (comp["__type__"] === type && (
+            comp["_name"] === nodeId ||
+            (comp["node"] && comp["node"]["__id__"] == nodeId))) {
             return comp;
         }
     }
@@ -100,6 +102,21 @@ const make = (plistPaths, destPrefabFolder, isBomb) => {
         if (!info) {
             continue;
         }
+        const destPath = `${destPrefabFolder}fish${fishType}.prefab`;
+        const lockPoint = {
+            x: 0,
+            y: 0,
+        };
+        if (fs.existsSync(destPath)) {
+            const content = fs.readFileSync(destPath);;
+            const oldJsonObj = JSON.parse(content);
+            const lockNode = getCompoentByType(oldJsonObj, "cc.Node", "lock");
+            // console.log(lockNode);
+            if (lockNode) {
+                lockPoint.x = lockNode["_lpos"].x;
+                lockPoint.y = lockNode["_lpos"].y;
+            }
+        }
         const {value, speedRate, lockPriority, isJackpot} = info || {value: 2, speedRate: 1, lockPriority: 1, isJackpot: false};
         const {w, h} = infos[0].size;
         // console.log(`w:${w}, h:${h}`);
@@ -108,6 +125,8 @@ const make = (plistPaths, destPrefabFolder, isBomb) => {
         // const audioSource = getCompoentByType(jsonObj, "cc.AudioSource", 1);
         const trans2 = getCompoentByType(jsonObj, "cc.UITransform", 4);
         const fishSprite = getCompoentByType(jsonObj, "cc.Sprite", 4)
+        const lockNode = getCompoentByType(jsonObj, "cc.Node", "lock");
+
         const deathTalk = info["deathTalk"] || "";
         const uuid = musicInfos.get(deathTalk);
         // console.log(`deathTalk:${deathTalk}, ${musicInfos.has(deathTalk)}`);
@@ -135,6 +154,8 @@ const make = (plistPaths, destPrefabFolder, isBomb) => {
         trans1._contentSize.height = h;
         trans2._contentSize.width = w;
         trans2._contentSize.height = h;
+        lockNode["_lpos"].x = lockPoint.x;
+        lockNode["_lpos"].y = lockPoint.y;
         // collider box
         const colliderBox = getCompoentByType(jsonObj, "cc.BoxCollider2D", 1);
         colliderBox._offset.x = 0;
@@ -143,7 +164,6 @@ const make = (plistPaths, destPrefabFolder, isBomb) => {
         colliderBox._size.height = h;
         // console.log(`len:${spriteFrames.length}`);
         const txt = JSON.stringify(jsonObj, null, 2);
-        const destPath = `${destPrefabFolder}fish${fishType}.prefab`;
         fs.writeFileSync(destPath, txt);
     }
 }
