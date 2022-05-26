@@ -4,6 +4,7 @@ const fs = require('fs');
 const getCompoentByType = (comps, type, nodeId) => {
     for (const comp of comps) {
         if (comp["__type__"] === type && (
+            nodeId === undefined ||
             comp["_name"] === nodeId ||
             (comp["node"] && comp["node"]["__id__"] == nodeId))) {
             return comp;
@@ -107,10 +108,26 @@ const make = (plistPaths, destPrefabFolder, isBomb) => {
             x: 0,
             y: 0,
         };
+        const {w, h} = infos[0].size;
+        const colliderRect = {
+            x: 0,
+            y: 0,
+            w: w,
+            h: h,
+        }
         if (fs.existsSync(destPath)) {
             const content = fs.readFileSync(destPath);;
             const oldJsonObj = JSON.parse(content);
             const lockNode = getCompoentByType(oldJsonObj, "cc.Node", "lock");
+            const colliderBox = getCompoentByType(oldJsonObj, "cc.BoxCollider2D");
+            const {x, y} = colliderBox["_offset"];
+            const {width, height} = colliderBox["_size"];
+            if (!(x === 0 && y === 0 && width === 0 && height === 0)) {
+                colliderRect.x = x;
+                colliderRect.y = y;
+                colliderRect.w = width;
+                colliderRect.h = height;
+            }
             // console.log(lockNode);
             if (lockNode) {
                 lockPoint.x = lockNode["_lpos"].x;
@@ -118,7 +135,6 @@ const make = (plistPaths, destPrefabFolder, isBomb) => {
             }
         }
         const {value, speedRate, lockPriority, isJackpot} = info || {value: 2, speedRate: 1, lockPriority: 1, isJackpot: false};
-        const {w, h} = infos[0].size;
         // console.log(`w:${w}, h:${h}`);
         const trans1 = getCompoentByType(jsonObj, "cc.UITransform", 1);
         const fishScript = getCompoentByType(jsonObj, "80ccalqirFBbZ4VTByxgkc0", 1);
@@ -158,10 +174,10 @@ const make = (plistPaths, destPrefabFolder, isBomb) => {
         lockNode["_lpos"].y = lockPoint.y;
         // collider box
         const colliderBox = getCompoentByType(jsonObj, "cc.BoxCollider2D", 1);
-        colliderBox._offset.x = 0;
-        colliderBox._offset.y = 0;
-        colliderBox._size.width = w;
-        colliderBox._size.height = h;
+        colliderBox._offset.x = colliderRect.x;
+        colliderBox._offset.y = colliderRect.y;
+        colliderBox._size.width = colliderRect.w;
+        colliderBox._size.height = colliderRect.h;
         // console.log(`len:${spriteFrames.length}`);
         const txt = JSON.stringify(jsonObj, null, 2);
         fs.writeFileSync(destPath, txt);
