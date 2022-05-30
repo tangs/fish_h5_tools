@@ -74,6 +74,7 @@ const timelinesUuid = new Map();
     const fishPrefabPaths = [
         "/Users/tangs/Documents/fish_h5/assets/fish/fish/prefabs/bomb",
         "/Users/tangs/Documents/fish_h5/assets/fish/fish/prefabs/fish",
+        "/Users/tangs/Documents/fish_h5/assets/fish/fish/prefabs/combination",
     ];
     const nameReg = /fish(\d+).prefab.meta$/;
     for (const path of fishPrefabPaths) {

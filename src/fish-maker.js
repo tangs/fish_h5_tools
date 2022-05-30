@@ -78,11 +78,8 @@ const make = (plistPaths, destPrefabFolder, isBomb) => {
         fishInfo[type] = info.sort((a, b) => a.frame - b.frame);
     }
     
-    
     const srcPrefab = "/Users/tangs/Documents/fish_h5/assets/fish/fish/prefabs/template.prefab";
     const srcPrefabContent = fs.readFileSync(srcPrefab);
-    
-
     
     for (const fishType in fishInfo) {
         const infos = fishInfo[fishType];
