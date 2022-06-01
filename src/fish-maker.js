@@ -1,5 +1,6 @@
 const { assert } = require('console');
 const fs = require('fs');
+const { rootPath } = require('./config')
 
 const getCompoentByType = (comps, type, nodeId) => {
     for (const comp of comps) {
@@ -12,7 +13,7 @@ const getCompoentByType = (comps, type, nodeId) => {
     }
 }
 
-const infoPath = "/Users/tangs/Documents/fish_h5/assets/fish/config/game/fishinfo.json.txt";
+const infoPath = `${rootPath}/assets/fish/config/game/fishinfo.json.txt`;
 const fishInfos = new Map();
 {
     const infos = JSON.parse(fs.readFileSync(infoPath));
@@ -23,7 +24,7 @@ const fishInfos = new Map();
     }
 }
 
-const musicDir = "/Users/tangs/Documents/fish_h5/assets/fish/music";
+const musicDir = `${rootPath}/assets/fish/music`;
 const musicInfos = new Map();
 {
     const nameReg = /(\w+).(mp3|m4a).meta/;
@@ -78,7 +79,7 @@ const make = (plistPaths, destPrefabFolder, isBomb) => {
         fishInfo[type] = info.sort((a, b) => a.frame - b.frame);
     }
     
-    const srcPrefab = "/Users/tangs/Documents/fish_h5/assets/fish/fish/prefabs/template.prefab";
+    const srcPrefab = `${rootPath}/assets/fish/fish/prefabs/template.prefab`;
     const srcPrefabContent = fs.readFileSync(srcPrefab);
     
     for (const fishType in fishInfo) {
@@ -181,21 +182,21 @@ const make = (plistPaths, destPrefabFolder, isBomb) => {
     }
 }
 
-const normalDir = "/Users/tangs/Documents/fish_h5/assets/fish/images/fish/normal";
+const normalDir = `${rootPath}/assets/fish/images/fish/normal`;
 const dir = fs.readdirSync(normalDir);
 let metas = dir.filter((file) => file.endsWith(".plist.meta")).map((file) => `${normalDir}/${file}`);
 const plistPaths = [
-    "/Users/tangs/Documents/fish_h5/assets/fish/images/fish/common_fish1.plist.meta",
-    "/Users/tangs/Documents/fish_h5/assets/fish/images/fish/common_fish2.plist.meta",
+    `${rootPath}/assets/fish/images/fish/common_fish1.plist.meta`,
+    `${rootPath}/assets/fish/images/fish/common_fish2.plist.meta`,
     ...metas
 ];
 // console.log(`paths:${plistPaths}`);
 
-const destPrefabFolder = "/Users/tangs/Documents/fish_h5/assets/fish/fish/prefabs/fish/";
+const destPrefabFolder = `${rootPath}/assets/fish/fish/prefabs/fish/`;
 make(plistPaths, destPrefabFolder, false);
 
 {
-    const dir = "/Users/tangs/Documents/fish_h5/assets/fish/images/fish/bomb/";
+    const dir = `${rootPath}/assets/fish/images/fish/bomb/`;
     const files = fs.readdirSync(dir);
     let metas = files.filter((file) => {
         // console.log(`file:${file}`);
@@ -205,6 +206,6 @@ make(plistPaths, destPrefabFolder, false);
     console.log(metas);
     make(
         metas, 
-        "/Users/tangs/Documents/fish_h5/assets/fish/fish/prefabs/bomb/",
+        `${rootPath}/assets/fish/fish/prefabs/bomb/`,
         true);
 }

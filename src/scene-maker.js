@@ -1,5 +1,6 @@
 const { assert } = require('console');
 const fs = require('fs');
+const { rootPath } = require('./config')
 
 const getCompoentByType = (comps, type, nodeId) => {
     for (const comp of comps) {
@@ -22,8 +23,8 @@ const timelinesUuid = new Map();
 {
     const nameReg = /game(\d+).json.txt$/;
     const nameMetaReg = /game(\d+).json.txt.meta$/;
-    const gameConfigDir = "/Users/tangs/Documents/fish_h5/assets/fish/config/game";
-    const sceneDir = "/Users/tangs/Documents/fish_h5/assets/fish/scenes/fish";
+    const gameConfigDir = `${rootPath}/assets/fish/config/game`;
+    const sceneDir = `${rootPath}/assets/fish/scenes/fish`;
     for (const file of fs.readdirSync(gameConfigDir)) {
         {
             const ret = file.match(nameMetaReg);
@@ -72,9 +73,9 @@ const timelinesUuid = new Map();
 }
 {
     const fishPrefabPaths = [
-        "/Users/tangs/Documents/fish_h5/assets/fish/fish/prefabs/bomb",
-        "/Users/tangs/Documents/fish_h5/assets/fish/fish/prefabs/fish",
-        "/Users/tangs/Documents/fish_h5/assets/fish/fish/prefabs/combination",
+        `${rootPath}/assets/fish/fish/prefabs/bomb`,
+        `${rootPath}/assets/fish/fish/prefabs/fish`,
+        `${rootPath}/assets/fish/fish/prefabs/combination`,
     ];
     const nameReg = /fish(\d+).prefab.meta$/;
     for (const path of fishPrefabPaths) {
@@ -94,7 +95,7 @@ const timelinesUuid = new Map();
 }
 {
     const bgImagePath = [
-        "/Users/tangs/Documents/fish_h5/assets/fish/images/bgs",
+        `${rootPath}/assets/fish/images/bgs`,
     ];
     const nameReg = /scene(\d+).jpg.meta$/;
     for (const path of bgImagePath) {
@@ -112,8 +113,8 @@ const timelinesUuid = new Map();
     }
 }
 {
-    const fishSceneTmpPath = "/Users/tangs/Documents/fish_h5/assets/fish/scenes/fish/fish.scene";
-    const sceneDestPath = "/Users/tangs/Documents/fish_h5/assets/fish/scenes/fish/";
+    const fishSceneTmpPath = `${rootPath}/assets/fish/scenes/fish/fish.scene`;
+    const sceneDestPath = `${rootPath}/assets/fish/scenes/fish/`;
     // const gameIds = Array.from(gameFishTypes.keys());
     // console.log(gameIds);
     const content = fs.readFileSync(fishSceneTmpPath);
