@@ -3,10 +3,15 @@ const fs = require('fs');
 const { rootPath } = require('./config')
 
 const getCompoentByType = (comps, type, nodeId) => {
+    let name = "";
     for (const comp of comps) {
+        const name1 = comp["_name"];
+        if (name1 != "") {
+            name = name1;
+        }
         if (comp["__type__"] === type && (
             nodeId === undefined ||
-            comp["_name"] === nodeId ||
+            name === nodeId ||
             (comp["node"] && comp["node"]["__id__"] == nodeId))) {
             return comp;
         }
@@ -137,8 +142,8 @@ const make = (plistPaths, destPrefabFolder, isBomb) => {
         const trans1 = getCompoentByType(jsonObj, "cc.UITransform", 1);
         const fishScript = getCompoentByType(jsonObj, "80ccalqirFBbZ4VTByxgkc0", 1);
         // const audioSource = getCompoentByType(jsonObj, "cc.AudioSource", 1);
-        const trans2 = getCompoentByType(jsonObj, "cc.UITransform", 4);
-        const fishSprite = getCompoentByType(jsonObj, "cc.Sprite", 4)
+        const trans2 = getCompoentByType(jsonObj, "cc.UITransform", "fish");
+        const fishSprite = getCompoentByType(jsonObj, "cc.Sprite")
         const lockNode = getCompoentByType(jsonObj, "cc.Node", "lock");
 
         const deathTalk = info["deathTalk"] || "";
