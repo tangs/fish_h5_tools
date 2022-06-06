@@ -15,6 +15,7 @@ const allFishTypes = new Set();
 
 const gameBgs = new Map();
 const allBgs = new Set();
+const allBgMusic = new Map();
 
 const fishPrefabUuid = new Map();
 const bgImageUuid = new Map();
@@ -48,6 +49,9 @@ const timelinesUuid = new Map();
             const path = `${gameConfigDir}/${file}`;
             const content = fs.readFileSync(path);
             const jsonObj = JSON.parse(content);
+            const { bgMusic } = jsonObj;
+            console.log(`bg music:${bgMusic}`);
+            allBgMusic.set(gameId, bgMusic);
             // console.log(path, file, gameId);
 
             for (const scene of jsonObj.scenes) {
@@ -71,6 +75,29 @@ const timelinesUuid = new Map();
     gameFishTypes.set("standalone", allFishTypes);
     gameBgs.set("standalone", allBgs);
 }
+
+
+const musicDir = `${rootPath}/assets/fish/music`;
+const musicInfos = new Map();
+{
+    const nameReg = /(\w+).(mp3|m4a).meta/;
+    for (const file of fs.readdirSync(musicDir)) {
+        const ret = file.match(nameReg);
+        if (ret instanceof Array && ret.length > 1) {       
+            const name = ret[1];
+            // console.log(file, name);
+            const path = `${musicDir}/${file}`;
+            const fileContent = fs.readFileSync(path);
+            const meta = JSON.parse(fileContent);
+            // console.log(meta);
+            // const comp = getCompoentByType(meta, "cc.AudioSource", 1);
+            const {uuid} = meta;
+            musicInfos.set(name, uuid);
+            // console.log(name, uuid);
+        }
+    }
+}
+
 {
     const fishPrefabPaths = [
         `${rootPath}/assets/fish/fish/prefabs/bomb`,
@@ -125,6 +152,13 @@ const timelinesUuid = new Map();
         const fishScript = getCompoentByType(tmpObj, "fb10c/rSnNAV7RObXxEz8ZA");
         const rootScript = getCompoentByType(tmpObj, "a783eVMAfNOpZpfy0khUhCr");
         const sceneScript = getCompoentByType(tmpObj, "cc.Scene");
+        const bgMusic = allBgMusic.get(gameId);
+        const bgMusicUuid = musicInfos.get(bgMusic);
+        console.log(`game id:${gameId}, bg music:${bgMusic}, uuid:${bgMusicUuid}`);
+        if (bgMusicUuid != undefined) {
+            const audioSource = getCompoentByType(tmpObj, "cc.AudioSource");
+            audioSource["_clip"]["__uuid__"] = bgMusicUuid;
+        }
 
         const fishPrefabs = [];
         const fishTypes = Array.from(gameFishTypes.get(gameId)).sort((a, b) => a - b);
