@@ -26,11 +26,19 @@ const timelinesUuid = new Map();
     const nameMetaReg = /game(\d+).json.txt.meta$/;
     const gameConfigDir = `${rootPath}/assets/fish/config/game`;
     const sceneDir = `${rootPath}/assets/fish/scenes/fish`;
+
+    const gameConfigFilter = (gameId) => {
+        return Number.parseInt(gameId) < 1000;
+    }
+
     for (const file of fs.readdirSync(gameConfigDir)) {
         {
             const ret = file.match(nameMetaReg);
             if (ret instanceof Array && ret.length > 0) {
                 const gameId = ret[1];
+                if (!gameConfigFilter(gameId)) {
+                    continue;
+                }
                 const path1 = `${gameConfigDir}/${file}`;
                 const content = fs.readFileSync(path1);
                 const {uuid} = JSON.parse(content);
@@ -44,6 +52,9 @@ const timelinesUuid = new Map();
         const ret = file.match(nameReg);
         if (ret instanceof Array && ret.length > 0) {       
             const gameId = ret[1];
+            if (!gameConfigFilter(gameId)) {
+                continue;
+            }
             const fishTypeSet = new Set();
             const bgs = new Set();
             const path = `${gameConfigDir}/${file}`;
