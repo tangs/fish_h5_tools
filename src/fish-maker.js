@@ -193,6 +193,7 @@ let metas = dir.filter((file) => file.endsWith(".plist.meta")).map((file) => `${
 const plistPaths = [
     `${rootPath}/assets/fish/images/fish/common_fish1.plist.meta`,
     `${rootPath}/assets/fish/images/fish/common_fish2.plist.meta`,
+    `${rootPath}/assets/fish/images/fish/common_fish3.plist.meta`,
     ...metas
 ];
 // console.log(`paths:${plistPaths}`);
