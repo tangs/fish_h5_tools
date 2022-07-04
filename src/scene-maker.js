@@ -175,7 +175,7 @@ const musicInfos = new Map();
         const fishTypes = Array.from(gameFishTypes.get(gameId)).sort((a, b) => a - b);
         assert(timelinesUuid.has(gameId));
         const timelineUuid = timelinesUuid.get(gameId);
-        console.log(`game id:${gameId}, timelineu uid:${timelineUuid}, len:${fishTypes.length}`);
+        console.log(`game id:${gameId}, timeline uuid:${timelineUuid}, len:${fishTypes.length}`);
         console.log(fishTypes);
 
         fishScript.timelinesText["__uuid__"] = timelineUuid;
