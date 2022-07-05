@@ -1,22 +1,23 @@
 const { assert } = require('console');
 const fs = require('fs');
 const { rootPath } = require('./config')
+const { getCompoentByType} = require('./utils')
 
-const getCompoentByType = (comps, type, nodeId) => {
-    let name = "";
-    for (const comp of comps) {
-        const name1 = comp["_name"];
-        if (name1 != "") {
-            name = name1;
-        }
-        if (comp["__type__"] === type && (
-            nodeId === undefined ||
-            name === nodeId ||
-            (comp["node"] && comp["node"]["__id__"] == nodeId))) {
-            return comp;
-        }
-    }
-}
+// const getCompoentByType = (comps, type, nodeId) => {
+//     let name = "";
+//     for (const comp of comps) {
+//         const name1 = comp["_name"];
+//         if (name1 != "") {
+//             name = name1;
+//         }
+//         if (comp["__type__"] === type && (
+//             nodeId === undefined ||
+//             name === nodeId ||
+//             (comp["node"] && comp["node"]["__id__"] == nodeId))) {
+//             return comp;
+//         }
+//     }
+// }
 
 const infoPath = `${rootPath}/assets/fish/config/game/fishinfo.json.txt`;
 const fishInfos = new Map();
@@ -90,7 +91,7 @@ const make = (plistPaths, destPrefabFolder, isBomb) => {
     for (const fishType in fishInfo) {
         const infos = fishInfo[fishType];
         // console.log(`type:${fishType}`);
-        const jsonObj = JSON.parse(srcPrefabContent);
+        let jsonObj = JSON.parse(srcPrefabContent);
         jsonObj[1]["_name"] = `fish${fishType}`;
         // console.log(jsonObj[1]["_name"]);
         const spriteFrames = [];
@@ -136,6 +137,7 @@ const make = (plistPaths, destPrefabFolder, isBomb) => {
                 lockPoint.x = lockNode["_lpos"].x;
                 lockPoint.y = lockNode["_lpos"].y;
             }
+            jsonObj = oldJsonObj;
         }
         const {value, speedRate, lockPriority, isJackpot} = info || {value: 2, speedRate: 1, lockPriority: 1, isJackpot: false};
         // console.log(`w:${w}, h:${h}`);
@@ -143,7 +145,7 @@ const make = (plistPaths, destPrefabFolder, isBomb) => {
         const fishScript = getCompoentByType(jsonObj, "80ccalqirFBbZ4VTByxgkc0", 1);
         // const audioSource = getCompoentByType(jsonObj, "cc.AudioSource", 1);
         const trans2 = getCompoentByType(jsonObj, "cc.UITransform", "fish");
-        const fishSprite = getCompoentByType(jsonObj, "cc.Sprite")
+        const fishSprite = getCompoentByType(jsonObj, "cc.Sprite", "fish")
         const lockNode = getCompoentByType(jsonObj, "cc.Node", "lock");
 
         const deathTalk = info["deathTalk"] || "";

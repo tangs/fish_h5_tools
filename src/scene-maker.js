@@ -1,14 +1,15 @@
 const { assert } = require('console');
 const fs = require('fs');
 const { rootPath } = require('./config')
+const { getCompoentByType} = require('./utils')
 
-const getCompoentByType = (comps, type, nodeId) => {
-    for (const comp of comps) {
-        if (comp["__type__"] === type && (!nodeId || comp["node"]["__id__"] == nodeId)) {
-            return comp;
-        }
-    }
-}
+// const getCompoentByType = (comps, type, nodeId) => {
+//     for (const comp of comps) {
+//         if (comp["__type__"] === type && (!nodeId || comp["node"]["__id__"] == nodeId)) {
+//             return comp;
+//         }
+//     }
+// }
 
 const gameFishTypes = new Map();
 const allFishTypes = new Set();
@@ -143,8 +144,8 @@ const musicInfos = new Map();
                 const bgIndex = ret[1];
                 const path1 = `${path}/${file}`;
                 const content = fs.readFileSync(path1);
-                const {uuid} = JSON.parse(content);
-                fishPrefabUuid.set(bgIndex, uuid);
+                const {uuid} = JSON.parse(content).subMetas.f9941;
+                bgImageUuid.set(Number.parseInt(bgIndex), uuid);
                 // console.log(`bg index:${bgIndex}, uuid:${uuid}`);
             }
         }
@@ -157,6 +158,7 @@ const musicInfos = new Map();
     // console.log(gameIds);
     const content = fs.readFileSync(fishSceneTmpPath);
     for (const gameId of gameBgs.keys()) {
+        console.log("***************start*******************")
         const destFilePath = `${sceneDestPath}/fish-${gameId}.scene`;
         const tmpObj = JSON.parse(content);
         const fishAssetsMgr = getCompoentByType(tmpObj, "c0672QOzepOmZmIJyjc9/QY");
@@ -197,8 +199,42 @@ const musicInfos = new Map();
                 "__expectedType__": "cc.Prefab"
             });
         }
+        if (gameId != "standalone") {
+            const bgs = gameBgs.get(gameId);
+            let bgUuid = "";
+
+            for (const bg of bgs) {
+                const uuid = bgImageUuid.get(bg);
+                console.log(`bg:${bg}, bg uuid:${uuid}`);
+                if (bgUuid == null || bgUuid == "") {
+                    bgUuid = uuid;
+                }
+            }
+
+            {
+                let idx = 1;
+                do {
+                    const comp = getCompoentByType(tmpObj, "bd05459cRhHBphDYUl8v3W1", undefined, (comp) => {
+                        return comp.id == idx;
+                        }
+                    );
+                    if (comp == null) {
+                        break;
+                    }
+                    if (!bgs.has(idx)) {
+                        comp.spriteFrame.__uuid__ = bgUuid;
+                    }
+                    ++idx;
+                } while(true);
+            }
+
+            // console.log(bgs);
+            const bg = getCompoentByType(tmpObj, "cc.Sprite", "bg")
+            bg._spriteFrame.__uuid__ = bgUuid
+        }
         fishAssetsMgr.otherFish = fishPrefabs;
         fs.writeFileSync(destFilePath, JSON.stringify(tmpObj, null, 2));
+        console.log("***************end*******************\n")
     }
 }
 
