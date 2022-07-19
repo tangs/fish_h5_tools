@@ -1,4 +1,3 @@
-const { time } = require('console');
 const fs = require('fs');
 const { root2Path } = require('./config')
 
