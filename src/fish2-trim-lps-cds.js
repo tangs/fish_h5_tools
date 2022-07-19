@@ -1,6 +1,5 @@
 const { fish2ResRootPath } = require("./config");
 const fs = require('fs');
-const { resourceUsage } = require("process");
 
 const infoEquals = (item1, item2) => {
     if (item1.x != item2.x || item1.y != item2.y || item1.r != item2.r) {
