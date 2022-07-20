@@ -42,7 +42,7 @@ const cdEquals = (a, b) => {
     return true;
 }
 
-const dealPath = function(path) {
+const dealPath = (path) => {
     const nameReg = /(.*).(anims)/;
     for (const file of fs.readdirSync(path)) {
         const filepath = `${path}/${file}`;
