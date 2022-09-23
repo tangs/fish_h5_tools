@@ -23,8 +23,8 @@ const bgImageUuid = new Map();
 const timelinesUuid = new Map();
 
 {
-    const nameReg = /game(\d+).json.txt$/;
-    const nameMetaReg = /game(\d+).json.txt.meta$/;
+    const nameReg = /game(\d+).json$/;
+    const nameMetaReg = /game(\d+).json.meta$/;
     const gameConfigDir = `${rootPath}/assets/fish/config/game`;
     const sceneDir = `${rootPath}/assets/fish/scenes/fish`;
 
@@ -180,7 +180,7 @@ const musicInfos = new Map();
         console.log(`game id:${gameId}, timeline uuid:${timelineUuid}, len:${fishTypes.length}`);
         console.log(fishTypes);
 
-        fishScript.timelinesText["__uuid__"] = timelineUuid;
+        fishScript.timelinesJson["__uuid__"] = timelineUuid;
         sceneScript["_name"] = `fish-${gameId}`;
         rootScript.isStandalone = gameId === "standalone";
 

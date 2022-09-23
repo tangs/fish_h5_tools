@@ -19,7 +19,7 @@ const { getCompoentByType} = require('./utils')
 //     }
 // }
 
-const infoPath = `${rootPath}/assets/fish/config/game/fishinfo.json.txt`;
+const infoPath = `${rootPath}/assets/fish/config/game/fishinfo.json`;
 const fishInfos = new Map();
 {
     const infos = JSON.parse(fs.readFileSync(infoPath));
