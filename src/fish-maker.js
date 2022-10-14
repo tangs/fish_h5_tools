@@ -139,7 +139,8 @@ const make = (plistPaths, destPrefabFolder, isBomb) => {
             }
             jsonObj = oldJsonObj;
         }
-        const {value, speedRate, lockPriority, isJackpot} = info || {value: 2, speedRate: 1, lockPriority: 1, isJackpot: false};
+        const {value, speedRate, lockPriority, isJackpot, zOrder} = info || 
+            {value: 2, speedRate: 1, lockPriority: 1, isJackpot: false, zOrder: 0};
         // console.log(`w:${w}, h:${h}`);
         const trans1 = getCompoentByType(jsonObj, "cc.UITransform", 1);
         const fishScript = getCompoentByType(jsonObj, "80ccalqirFBbZ4VTByxgkc0", 1);
@@ -162,6 +163,7 @@ const make = (plistPaths, destPrefabFolder, isBomb) => {
         fishScript.isBomb = isBomb;
         fishScript.lockPriority = lockPriority;
         fishScript.isJackpot = isJackpot;
+        fishScript.zOrder = zOrder;
         fishSprite._spriteFrame = spriteFrames[0];
         if (uuid) {
             fishScript.deathTalkClip = {
