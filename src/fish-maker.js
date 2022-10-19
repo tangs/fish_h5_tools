@@ -51,6 +51,29 @@ const musicInfos = new Map();
     }
 }
 
+const updateFishInfo = (fishScript, info, fishTypeId, isBomb) => {
+    const {value, speedRate, lockPriority, isJackpot, zOrder} = info ||
+            {value: 2, speedRate: 1, lockPriority: 1, isJackpot: false, zOrder: 0};
+    const deathTalk = info["deathTalk"] || "";
+    const uuid = musicInfos.get(deathTalk);
+
+    fishScript.typeId = fishTypeId;
+    fishScript.value = value;
+    fishScript.speedRate = speedRate;
+    fishScript.isBomb = isBomb;
+    fishScript.lockPriority = lockPriority;
+    fishScript.isJackpot = isJackpot;
+    fishScript.zOrder = zOrder;
+    if (uuid) {
+        fishScript.deathTalkClip = {
+            "__uuid__": uuid,
+            "__expectedType__": "cc.AudioClip",
+        };
+    } else {
+        fishScript.deathTalkClip = null;
+    }
+}
+
 const make = (plistPaths, destPrefabFolder, isBomb) => {
     const nameReg = /fish_type(\d+)_move \((\d+)\)/;
 
@@ -139,8 +162,8 @@ const make = (plistPaths, destPrefabFolder, isBomb) => {
             }
             jsonObj = oldJsonObj;
         }
-        const {value, speedRate, lockPriority, isJackpot, zOrder} = info || 
-            {value: 2, speedRate: 1, lockPriority: 1, isJackpot: false, zOrder: 0};
+        // const {value, speedRate, lockPriority, isJackpot, zOrder} = info ||
+        //     {value: 2, speedRate: 1, lockPriority: 1, isJackpot: false, zOrder: 0};
         // console.log(`w:${w}, h:${h}`);
         const trans1 = getCompoentByType(jsonObj, "cc.UITransform", 1);
         const fishScript = getCompoentByType(jsonObj, "80ccalqirFBbZ4VTByxgkc0", 1);
@@ -149,30 +172,32 @@ const make = (plistPaths, destPrefabFolder, isBomb) => {
         const fishSprite = getCompoentByType(jsonObj, "cc.Sprite", "fish")
         const lockNode = getCompoentByType(jsonObj, "cc.Node", "lock");
 
-        const deathTalk = info["deathTalk"] || "";
-        const uuid = musicInfos.get(deathTalk);
+
         // console.log(`deathTalk:${deathTalk}, ${musicInfos.has(deathTalk)}`);
         // console.log(`uuid:${uuid}`);
 
         // audioSource["_clip"]["__uuid__"] = uuid;
 
-        fishScript.typeId = fishTypeId;
-        fishScript.value = value;
-        fishScript.speedRate = speedRate;
+        updateFishInfo(fishScript, info, fishTypeId, isBomb);
+        // fishScript.typeId = fishTypeId;
+        // fishScript.value = value;
+        // fishScript.speedRate = speedRate;
+        // fishScript.spriteFrames = spriteFrames;
+        // fishScript.isBomb = isBomb;
+        // fishScript.lockPriority = lockPriority;
+        // fishScript.isJackpot = isJackpot;
+        // fishScript.zOrder = zOrder;
+        // if (uuid) {
+        //     fishScript.deathTalkClip = {
+        //         "__uuid__": uuid,
+        //         "__expectedType__": "cc.AudioClip",
+        //     };
+        // } else {
+        //     fishScript.deathTalkClip = null;
+        // }
         fishScript.spriteFrames = spriteFrames;
-        fishScript.isBomb = isBomb;
-        fishScript.lockPriority = lockPriority;
-        fishScript.isJackpot = isJackpot;
-        fishScript.zOrder = zOrder;
         fishSprite._spriteFrame = spriteFrames[0];
-        if (uuid) {
-            fishScript.deathTalkClip = {
-                "__uuid__": uuid,
-                "__expectedType__": "cc.AudioClip",
-            };
-        } else {
-            fishScript.deathTalkClip = null;
-        }
+
         trans1._contentSize.width = w;
         trans1._contentSize.height = h;
         trans2._contentSize.width = w;
@@ -189,6 +214,29 @@ const make = (plistPaths, destPrefabFolder, isBomb) => {
         const txt = JSON.stringify(jsonObj, null, 2);
         fs.writeFileSync(destPath, txt);
     }
+}
+
+const makeCombination = (dir) => {
+    const files = fs.readdirSync(dir);
+    const reg = /fish(\d+).prefab$/;
+    files.filter((file) => reg.test(file)).map((file) => file).map((file) => {
+        const path = `${dir}/${file}`;
+        const ret = path.match(reg);
+        console.assert(ret != null && ret.length > 1);
+        const fishTypeId = Number.parseInt(ret[1]);
+
+        console.log(`file:${path}, fish type id: ${fishTypeId}`);
+
+        const srcPrefabContent = fs.readFileSync(path);
+        let jsonObj = JSON.parse(srcPrefabContent);
+        const info = fishInfos.get(fishTypeId);
+        
+        const fishScript = getCompoentByType(jsonObj, "80ccalqirFBbZ4VTByxgkc0", 1);
+        updateFishInfo(fishScript, info, fishTypeId, false);
+
+        const txt = JSON.stringify(jsonObj, null, 2);
+        fs.writeFileSync(path, txt);
+    });
 }
 
 const normalDir = `${rootPath}/assets/fish/images/fish/normal`;
@@ -219,3 +267,5 @@ make(plistPaths, destPrefabFolder, false);
         `${rootPath}/assets/fish/fish/prefabs/bomb/`,
         true);
 }
+
+makeCombination(`${rootPath}/assets/fish/fish/prefabs/combination/`);
